@@ -44,11 +44,15 @@ class DnDFighters extends React.Component {
     getData(this.state.apiUrl+'/races').then(data => {
       const fighterRaces = data.races;
       this.setState({ fighterRaces });
+    }).catch((error) => {
+      console.error('Error:', error);
     });
 
     getData(this.state.apiUrl+'/classes').then(data => {
       const fighterClasses = data.classes;
       this.setState({ fighterClasses });
+    }).catch((error) => {
+      console.error('Error:', error);
     });
 
     this.getSavedFighters();
@@ -74,15 +78,17 @@ class DnDFighters extends React.Component {
     getData(this.state.apiUrl+'/savedwaifus').then(data => {
       const savedFighters = data.waifus;
       this.setState({ savedFighters });
+    }).catch((error) => {
+      console.error('Error:', error);
     });
   }
 
   generateFighter() {
     const fighter = {
-      'race' : (this.state.fighterRace == 'null')?null:this.state.fighterRace,
-      'class': (this.state.fighterClass == 'null')?null:this.state.fighterClass,
-      'primaryAbility': (this.state.primaryAbility == 'null')?null:this.state.primaryAbility,
-      'secondaryAbility': (this.state.secondaryAbility == 'null')?null:this.state.secondaryAbility
+      'race' : (this.state.fighterRace === 'null')?null:this.state.fighterRace,
+      'class': (this.state.fighterClass === 'null')?null:this.state.fighterClass,
+      'primaryAbility': (this.state.primaryAbility === 'null')?null:this.state.primaryAbility,
+      'secondaryAbility': (this.state.secondaryAbility === 'null')?null:this.state.secondaryAbility
     }
     this.setState({ searchFighter:{} });
 
@@ -109,7 +115,7 @@ class DnDFighters extends React.Component {
   }
 
   saveFighter() {
-    if(typeof this.state.searchFighter.race == 'undefined' || this.state.searchFighter.class == 'undefined')
+    if(typeof this.state.searchFighter.race === 'undefined' || this.state.searchFighter.class === 'undefined')
       return;
     postData(this.state.apiUrl+'/savewaifu', this.state.searchFighter).then(data => {
      
@@ -123,7 +129,9 @@ class DnDFighters extends React.Component {
   deleteFighter(fighterid) {
     deleteFighterReq(this.state.apiUrl, fighterid).then(
       this.getSavedFighters()
-    );
+    ).catch((error) => {
+      console.error('Error:', error);
+    });
   }
   
   render() {
@@ -140,7 +148,7 @@ class DnDFighters extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {this.state.savedFighters.length > 0 &&
+                {(typeof this.state.savedFighters !== 'undefined' && this.state.savedFighters.length > 0) &&
                   this.state.savedFighters.map((fighter,i) => 
                     <FighterRows key={i} fighter={fighter} deleteFighter={this.deleteFighter} />
                   )
@@ -265,7 +273,7 @@ export function FigherRacesList(props) {
 
   const raceLines = fighterRaces.map((race, i) => 
     {
-      selectedRace = (props.searchFighter.race == race.name)?'table-active':'';
+      selectedRace = (props.searchFighter.race === race.name)?'table-active':'';
       return (
         <tr key={i}  className={selectedRace} >
           <td> {race.name} </td>
@@ -304,7 +312,7 @@ export function FighterClassesList(props) {
   let selectedClass = "";
 
   const classLines = fighterClasses.map((vclass,i) => {
-      selectedClass = (props.searchFighter.class == vclass.name)?'table-active':'';
+      selectedClass = (props.searchFighter.class === vclass.name)?'table-active':'';
       return (
         <tr key={i} className={selectedClass}>
           <td> { vclass.name }</td>
